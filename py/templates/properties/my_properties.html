@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}My Properties - Real Estate Sales{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1>My Properties</h1>
+    </div>
+    <div class="col text-end">
+        <a href="{% url 'property_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> List New Property
+        </a>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for property in properties %}
+    <div class="col">
+        <div class="card h-100 property-card">
+            {% if property.images.exists %}
+            <img src="{{ property.images.first.image.url }}" class="card-img-top property-image" alt="{{ property.title }}">
+            {% else %}
+            <div class="card-img-top property-image bg-light d-flex align-items-center justify-content-center">
+                <i class="bi bi-house text-muted" style="font-size: 3rem;"></i>
+            </div>
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ property.title }}</h5>
+                <p class="card-text text-muted">
+                    <i class="bi bi-geo-alt"></i> {{ property.city }}, {{ property.state }}
+                </p>
+                <p class="card-text">
+                    <strong>${{ property.price|floatformat:0|intcomma }}</strong>
+                </p>
+                <p class="card-text">
+                    <span class="badge {% if property.status == 'available' %}bg-success{% elif property.status == 'pending' %}bg-warning{% else %}bg-secondary{% endif %}">
+                        {{ property.get_status_display }}
+                    </span>
+                </p>
+            </div>
+            <div class="card-footer bg-white">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'property_detail' property.pk %}" class="btn btn-outline-primary">
+                        <i class="bi bi-eye"></i> View Details
+                    </a>
+                    <a href="{% url 'property_update' property.pk %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-pencil"></i> Edit
+                    </a>
+                    <a href="{% url 'property_delete' property.pk %}" class="btn btn-outline-danger">
+                        <i class="bi bi-trash"></i> Delete
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info">
+            You haven't listed any properties yet.
+            <a href="{% url 'property_create' %}" class="alert-link">List your first property</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %} 

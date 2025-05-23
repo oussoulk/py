@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ property.title }} - Real Estate Sales{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h1 class="mb-4">{{ property.title }}</h1>
+        
+        {% if property.images.exists %}
+        <div id="propertyCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                {% for image in property.images.all %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <img src="{{ image.image.url }}" class="d-block w-100" alt="{{ property.title }}" style="height: 400px; object-fit: cover;">
+                </div>
+                {% endfor %}
+            </div>
+            {% if property.images.count > 1 %}
+            <button class="carousel-control-prev" type="button" data-bs-target="#propertyCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#propertyCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Description</h5>
+                <p class="card-text">{{ property.description }}</p>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Details</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Price:</strong> ${{ property.price|floatformat:0|intcomma }}</p>
+                        <p><strong>Type:</strong> {{ property.get_property_type_display }}</p>
+                        <p><strong>Status:</strong> {{ property.get_status_display }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Bedrooms:</strong> {{ property.bedrooms }}</p>
+                        <p><strong>Bathrooms:</strong> {{ property.bathrooms }}</p>
+                        <p><strong>Square Feet:</strong> {{ property.square_feet|intcomma }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Location</h5>
+                <p class="card-text">
+                    {{ property.address }}<br>
+                    {{ property.city }}, {{ property.state }} {{ property.zip_code }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Contact Information</h5>
+                <p class="card-text">
+                    <strong>Listed by:</strong> {{ property.owner.username }}<br>
+                    <strong>Listed on:</strong> {{ property.created_at|date:"F j, Y" }}
+                </p>
+                {% if user.is_authenticated and user == property.owner %}
+                <div class="d-grid gap-2">
+                    <a href="{% url 'property_update' property.pk %}" class="btn btn-primary">
+                        <i class="bi bi-pencil"></i> Edit Property
+                    </a>
+                    <a href="{% url 'property_delete' property.pk %}" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Delete Property
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
